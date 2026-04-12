@@ -11,9 +11,13 @@ import java.math.BigDecimal;
 
 // Class PaymentService logique métier validation calcul
 
+
+
+
 public class PaymentService {
 
     // interaction avec la base de donnée spring injecte pour utiliser les opérations sur les entités
+
     private final PaymentRepository paymentRepository;
 
     public PaymentService (PaymentRepository paymentRepository)
@@ -21,7 +25,16 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
+    // Ajouter un payement
+    public Payment ajouterPayment(Payment payment)
+    {
+        validateTitle(payment);
+        validateAmount(payment);
+        return paymentRepository.save(payment);
+    }
+
 // méthode validation montant si il est null ou plus bas que 0 message d'erreur
+
     public void validateAmount(Payment payment)
     {
         if (payment.getAmount() == null || payment.getAmount().compareTo(BigDecimal.ZERO)<=0)
@@ -32,10 +45,11 @@ public class PaymentService {
         {
             System.out.println("correct");
         }
-
     }
 
+
     // méthode qui vérifie si le titre est à null ou non si oui message d'erreur
+
     public void validateTitle(Payment payment)
     {
         if (payment.getTitle() == null);
@@ -43,7 +57,9 @@ public class PaymentService {
             throw new IllegalArgumentException(" n est pas rempli");
         }
     }
+
 // renvoie le total de toutes les sommes de dépense
+
     public BigDecimal total()
     {
         BigDecimal total = BigDecimal.ZERO;
@@ -55,7 +71,34 @@ public class PaymentService {
         }
         return total;
     }
-// modifier titres et des montants
 
-    // supprimer un titre ou un montant
+    // modifier titres et des montants
+
+    public void modifications(Payment paiement) {
+        if (paymentRepository.existsById(paiement.getId())) {
+
+            Payment paiementExistant = paymentRepository.findById(paiement.getId()).get();
+
+            if (paiement.getAmount() != null) {
+                paiementExistant.setAmount(paiement.getAmount());
+            }
+
+            if (paiement.getTitle() != null && !paiement.getTitle().trim().isEmpty()) {
+                paiementExistant.setTitle(paiement.getTitle());
+            }
+
+            paymentRepository.save(paiementExistant);
+        } else {
+            throw new IllegalArgumentException("Paiement introuvable");
+        }
+    }
+
+    // supprimer un titre et un montant via l'id
+    public void supprimerPaiement(Long id) {
+        if (paymentRepository.existsById(id)) {
+            paymentRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Paiement introuvable");
+        }
+    }
 }
