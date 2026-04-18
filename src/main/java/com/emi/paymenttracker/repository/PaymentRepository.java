@@ -25,6 +25,8 @@ public interface PaymentRepository extends JpaRepository<Payment,Long>{
     @Query("SELECT AVG(p.amount) FROM Payment p")
     BigDecimal findAvgAmount();
 
+    List<Payment> findByTitle(String title);
+
 
 }
 

@@ -51,6 +51,16 @@ public class PaymentService {
     }
 
 
+    // méthode qui vérifie si le titre est à null ou non si oui message d'erreur
+
+    public void validateTitle(Payment payment)
+    {
+        if (payment.getTitle() == null)
+        {
+            throw new IllegalArgumentException("Pas de titre");
+        }
+    }
+
     // méthode qui renvoie les valeurs
 
     public List<Payment> affichevaleur()
@@ -106,15 +116,7 @@ public class PaymentService {
     }
 
 
-    // méthode qui vérifie si le titre est à null ou non si oui message d'erreur
 
-    public void validateTitle(Payment payment)
-    {
-        if (payment.getTitle() == null)
-        {
-            throw new IllegalArgumentException("Pas de titre");
-        }
-    }
 
 
 // renvoie le total de toutes les sommes de dépense
@@ -153,6 +155,7 @@ public class PaymentService {
         }
     }
 
+
     // supprimer un titre et un montant via l'id
 
     public void supprimerPaiement(Long id) {
@@ -183,17 +186,16 @@ public class PaymentService {
         return paymentRepository.count();
     }
 
+
+    // Vérification d'un paiement existant ou non
+
     public Boolean existePaiement(Payment payment)
     {
-        if(paymentRepository.existsByTitleAndAmount(payment.getTitle(), payment.getAmount()))
-        {
-            throw new IllegalArgumentException("un paiement avec ce titre et montant existe deja");
-        }
-        else
-        {
-            return true;
-        }
+        return paymentRepository.existsByTitleAndAmount(payment.getTitle(), payment.getAmount());
     }
+
+
+    //Recherche paiement supérieur à un montant introduit
 
     public List<BigDecimal> afficherPaiementsSuperieursA(BigDecimal amount)
     {
@@ -207,7 +209,8 @@ public class PaymentService {
 
     }
 
-    // retrouver paiements inférieur à un nombre
+
+    // retrouver paiements inférieur à un montant introduit
 
     public List<BigDecimal> afficherPaiementsInferieursA(BigDecimal amount)
     {
@@ -221,38 +224,34 @@ public class PaymentService {
         return inferieur;
     }
 
+
+    //Recherche le montantMax de mon champ Amount
+
     public BigDecimal montantMax()
     {
         return paymentRepository.findMaxAmount();
     }
+
+    // Recherche le minimum de mon champ AMount
+
     public BigDecimal montantMin()
     {
         return paymentRepository.findMinAmount();
     }
+
+
+    // Renvoie la moyenne des montants
 
     public BigDecimal moyenneMontant()
     {
         return paymentRepository.findAvgAmount();
     }
 
+
+    // Rechcerche par titre
+
+    public List<Payment> rechercherParTitre(String titre) {
+        List<Payment> payments = paymentRepository.findByTitle(titre);
+        return payments;
+    }
 }
-
-/*
-compterPaiements
-existePaiement
-afficherPaiementsSuperieursA
-afficherPaiementsInferieursA
-Méthodes avec logique un peu plus poussée
-montantMax
-montantMin
-moyenneMontants
-
-Méthodes de recherche
-rechercherParTitre
-rechercherParTitreExact
-rechercherTitresContenant
-Méthodes “analyse”
-compterTitresVides
-compterPaiementsSuperieursA
-compterPaiementsInferieursA
-*/
